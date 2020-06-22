@@ -285,7 +285,7 @@ function inicia_mapa() {
 
         //fetch 
         let t_antes = performance.now()
-        fetch('http://coldfoot-api.eba-8zt2jyyb.us-west-2.elasticbeanstalk.com/coords?lat='+lat+'&lon=' + lon, {mode: 'cors'})
+        fetch('https://coldfoot-api.eba-8zt2jyyb.us-west-2.elasticbeanstalk.com/coords?lat='+lat+'&lon=' + lon, {mode: 'cors'})
             .then(response => response.json())
             .then(function(resposta) {
                 let t_depoisb = performance.now();
