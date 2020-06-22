@@ -384,7 +384,7 @@ function inicia_mapa() {
                 console.log("Centro", centro, "no_raio", no_raio, "raio em km", raio);
             })
             .catch(function(e) {
-                $log.append("p").classed("erro").append("span").html("Erro na busca do raio. Provavelmente por causa do certificado do servidor da API. Experimente visitar primeiro <a href='https://coldfoot-api.eba-8zt2jyyb.us-west-2.elasticbeanstalk.com/'>esta página</a> e tentar novamente.");
+                $log.append("p").classed("erro", true).append("span").html("Erro na busca do raio. Provavelmente por causa do certificado do servidor da API. Experimente visitar primeiro <a href='https://coldfoot-api.eba-8zt2jyyb.us-west-2.elasticbeanstalk.com/'>esta página</a> e tentar novamente.");
             });      
     });
 };
