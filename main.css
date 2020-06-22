@@ -68,6 +68,10 @@ main {
     display: inline-block;
 }
 
+#log p.erro span {
+    color: firebrick;
+}
+
 @media (max-width: 480px) {
     #geocoder {
         left: .5em;
