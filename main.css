@@ -58,19 +58,38 @@ main {
     color: ghostwhite;
 }
 
-#log p.oculta {
+#log p.botoes {
     cursor: pointer;
     border-radius: .5em;
     margin-bottom: .5em;
     padding: .5em;
-    background-color: #333;
     color: ghostwhite;
+    margin-right: .5em;
     display: inline-block;
+}
+
+#log p.oculta {
+    background-color: #333;
+    border: 1px solid #333;
+}
+
+#log p.mostra {
+    background-color: ghostwhite;
+    color: #B3B134;
+    border: 1px solid #B3B134;
+}
+
+#log p.mostra.selecionado {
+    background-color: #B3B134;
+    color: ghostwhite;
+
 }
 
 #log p.erro span {
     color: firebrick;
 }
+
+
 
 @media (max-width: 480px) {
     #geocoder {

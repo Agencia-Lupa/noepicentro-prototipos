@@ -145,10 +145,17 @@ function limita(o_circulo) {
 
     console.log(t2-t1);
 
+    let botao_mostra_selecionado = false;
+
     $log.select("p.limita>span").text("9. Filtrando pontos que dentro do círculo... ok!");
     $log.append("p").append("span").text("10. Renderizando (também pode demorar).");
-    $log.insert("p", "p.first").classed("oculta", true).text("Ocultar log").on("click", function() {
+    $log.insert("p", "p.first").classed("oculta", true).classed("botoes", true).text("Ocultar log").on("click", function() {
         $log.style("opacity", 0);
+    })
+    $log.insert("p", "p.oculta").classed("mostra", true).classed("botoes", true).text("Mostra setores").on("click", function() { 
+        botao_mostra_selecionado = !botao_mostra_selecionado;
+        $log.select("p.mostra").classed("selecionado", botao_mostra_selecionado);
+        map.setPaintProperty("setores-destacados", "fill-opacity", botao_mostra_selecionado ? 0.5 : 0); 
     })
 
     
@@ -164,7 +171,7 @@ function limita(o_circulo) {
         'paint': {
         'circle-color': 'firebrick',
         'circle-radius' : 2,
-        'circle-opacity' : 0.5
+        'circle-opacity' : 0.4
     }},
     'road-minor-low'); 
 
@@ -190,62 +197,15 @@ function destaca_setores(setores_dentro) {
         'source': 'setores',
         'source-layer': 'set-29jjsu',
         'paint': {
-            'fill-outline-color': 'purple',
-            'fill-color': 'purple',
-            'fill-opacity': 0.5
-        },
-        'filter': ['in', 'code_tract', '']
-    }); 
-
-    map.addLayer(
-        {
-        'id': 'setores-destacados2',
-        'type': 'fill',
-        'source': 'setores',
-        'source-layer': 'set-29jjsu',
-        'paint': {
-            'fill-outline-color': 'gold',
-            'fill-color': 'gold',
-            'fill-opacity': 0.5
+            'fill-outline-color': '#333',
+            'fill-color': '#B3B134',
+            'fill-opacity': 0
         },
         'filter': ['in', 'code_tract', '']
     }); 
 
     map.setFilter('setores-destacados', ['in', ['get', 'code_tract'], ["literal", codigos]]);
     map.moveLayer('setores-destacados');
-
-    let set = ['292740805070119', '292740805070071', '292740805070213',
-    '292740805070233', '292740805070028', '292740805070114',
-    '292740805070172', '292740805070253', '292740805070030',
-    '292740805070111', '292740805070166', '292740805070181',
-    '292740805070202', '292740805070110', '292740805070070',
-    '292740805070029', '292740805070201', '292740805070243',
-    '292740805070242', '292740805070232', '292740805070205',
-    '292740805070203', '292740805070108', '292740805070064',
-    '292740805070005', '292740805070069', '292740805070150',
-    '292740805070180', '292740805070164', '292740805070173',
-    '292740805070105', '292740805070004', '292740805070106',
-    '292740805070268', '292740805070240', '292740805070066',
-    '292740805070068', '292740805070063', '292740805070065',
-    '292740805070241', '292740805070026', '292740805070020',
-    '292740805070067', '292740805070025', '292740805070229',
-    '292740805070231', '292740805070274', '292740805070183',
-    '292740805070027', '292740805070021', '292740805070023',
-    '292740805070022', '292740805070165', '292740805070024',
-    '292740805070230', '292740805070189', '292740805070198',
-    '292740805070101', '292740805070061', '292740805070265',
-    '292740805070062', '292740805070058', '292740805070277',
-    '292740805070276', '292740805070059', '292740805070057',
-    '292740805070060', '292740805070056', '292740805070171',
-    '292740805070197', '292740805070149', '292740805070103',
-    '292740805070053', '292740805070054', '292740805070174',
-    '292740805070222', '292740805070188', '292740805070055',
-    '292740805070102', '292740805070187', '292740805070196',
-    '292740805070098', '292740805070249', '292740805070099',
-    '292740805070143', '292740805070142', '292740805070100',
-    '292740805070264', '292740805070144'];
-
-    map.setFilter('setores-destacados2', ['in', ['get', 'code_tract'], ["literal", set]]);
 }
 
 
@@ -289,6 +249,8 @@ function inicia_mapa() {
         if (map.getSource('limita')) map.removeSource('limita');
         if (map.getLayer('circulo')) map.removeLayer('circulo');
         if (map.getSource('circulo')) map.removeSource('circulo');
+        if (map.getLayer('setores-destacados')) map.removeLayer('setores-destacados');
+        if (map.getSource('setores')) map.removeSource('setores'); 
 
         $log.append("p").classed("first", true).append("span").text("1. Localização definida.")
 
@@ -329,7 +291,7 @@ function inicia_mapa() {
                 let no_raio = turf.point(ponto_raio);
                 let raio = turf.distance(centro, no_raio);
 
-                $log.select("p.fetch>span").text("3. Solicitando tamanho do raio para o backend... OK!");
+                $log.select("p.fetch>span").text("3. Solicitando tamanho do raio para o backend... OK! " + d3.format(",.1f")(raio) + "km.");
 
                 // desenha círculo
 
@@ -370,9 +332,7 @@ function inicia_mapa() {
                                 $log.append("p").classed("limita", true).append("span").text("9. Filtrando pontos que dentro do círculo... ");
                 
                                 limita(o_circulo); 
-                                //destaca_setores(setores_dentro);
-
-
+                                destaca_setores(setores_dentro);
                             }                            
 
 
