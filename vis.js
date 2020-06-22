@@ -317,7 +317,7 @@ function inicia_mapa() {
                     throw Error();
                 } 
                 return response.json();
-            }
+            })
             .then(function(resposta) {
                 let t_depoisb = performance.now();
                 console.log("tempo para fetch", t_depoisb-t_antes)
@@ -384,9 +384,8 @@ function inicia_mapa() {
                 console.log("Centro", centro, "no_raio", no_raio, "raio em km", raio);
             })
             .catch(function(e) {
-                $log.append("p").classed("erro").append("span").html("Erro na busca do raio. Provavelmente por causa do certificado do servidor da API. Experimente visitar primeiro <a href='https://coldfoot-api.eba-8zt2jyyb.us-west-2.elasticbeanstalk.com/'>esta página.</a>");
-            }) 
-        );      
+                $log.append("p").classed("erro").append("span").html("Erro na busca do raio. Provavelmente por causa do certificado do servidor da API. Experimente visitar primeiro <a href='https://coldfoot-api.eba-8zt2jyyb.us-west-2.elasticbeanstalk.com/'>esta página</a> e tentar novamente.");
+            });      
     });
 };
 
