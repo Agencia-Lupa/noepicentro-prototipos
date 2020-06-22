@@ -82,6 +82,17 @@ main {
 #log p.mostra.selecionado {
     background-color: #B3B134;
     color: ghostwhite;
+}
+
+#log p.mostra-circulo {
+    background-color: ghostwhite;
+    color: tomato;
+    border: 1px solid tomato;
+}
+
+#log p.mostra-circulo.selecionado {
+    background-color: tomato;
+    color: ghostwhite;
 
 }
 

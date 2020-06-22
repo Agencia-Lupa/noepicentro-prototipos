@@ -146,17 +146,26 @@ function limita(o_circulo) {
     console.log(t2-t1);
 
     let botao_mostra_selecionado = false;
+    let botao_mostra_circulo = true;
 
     $log.select("p.limita>span").text("9. Filtrando pontos que dentro do círculo... ok!");
     $log.append("p").append("span").text("10. Renderizando (também pode demorar).");
+
     $log.insert("p", "p.first").classed("oculta", true).classed("botoes", true).text("Ocultar log").on("click", function() {
         $log.style("opacity", 0);
-    })
+    });
+
     $log.insert("p", "p.oculta").classed("mostra", true).classed("botoes", true).text("Mostra setores").on("click", function() { 
         botao_mostra_selecionado = !botao_mostra_selecionado;
         $log.select("p.mostra").classed("selecionado", botao_mostra_selecionado);
         map.setPaintProperty("setores-destacados", "fill-opacity", botao_mostra_selecionado ? 0.5 : 0); 
-    })
+    });
+
+    $log.insert("p", "p.mostra").classed("mostra-circulo", true).classed("botoes", true).classed("selecionado", true).text("Mostra círculo").on("click", function() { 
+        botao_mostra_circulo = !botao_mostra_circulo
+        $log.select("p.mostra-circulo").classed("selecionado", botao_mostra_circulo);
+        map.setPaintProperty("circulo", "fill-outline-color", botao_mostra_circulo ? 'tomato' : 'transparent'); 
+    });
 
     
     map.addSource('limita', {
