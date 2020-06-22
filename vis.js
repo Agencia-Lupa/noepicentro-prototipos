@@ -6,6 +6,8 @@ var map = new mapboxgl.Map({
     zoom: 4
 });
 
+let $log = d3.select("#log");
+
 // funções que vão ser chamadas
 
 function circulo(centro, raio) {
@@ -30,6 +32,7 @@ function circulo(centro, raio) {
             'fill-opacity': 1
         }},
     );
+    $log.select("p.circulo>span").text("4. Desenhando círculo... OK!");
     return circle;
 }
 
@@ -43,7 +46,7 @@ function lista_setores_dentro(circulo) {
         }
     });
     let codigos_dentro = setores_dentro.map(d=>d.properties.code_tract);
-    localStorage.setItem('testObject', JSON.stringify(codigos_dentro));
+    //localStorage.setItem('testObject', JSON.stringify(codigos_dentro));
     
     return setores_dentro;
 }
@@ -108,6 +111,8 @@ function povoa(setores_dentro, poligono_features) {
         "features": todos_features
     }
 
+    $log.append("p").append("span").text("8. Simulação Ok!");   
+
     /*
     map.addSource('ponto_dentro', {
     'type': 'geojson',
@@ -139,6 +144,13 @@ function limita(o_circulo) {
     console.log("Total de pontos dentro do círculo ", pontos_dentro_circulo.features.length)
 
     console.log(t2-t1);
+
+    $log.select("p.limita>span").text("9. Filtrando pontos que dentro do círculo... ok!");
+    $log.append("p").append("span").text("10. Renderizando (também pode demorar).");
+    $log.insert("p", "p.first").classed("oculta", true).text("Ocultar log").on("click", function() {
+        $log.style("opacity", 0);
+    })
+
     
     map.addSource('limita', {
     'type': 'geojson',
@@ -155,6 +167,8 @@ function limita(o_circulo) {
         'circle-opacity' : 0.5
     }},
     'road-minor-low'); 
+
+
     
     //map.removeLayer('ponto');
     //map.removeSource('ponto_dentro');
@@ -250,7 +264,7 @@ function inicia_mapa() {
             'zoom': 4
         },
         mapboxgl: mapboxgl
-    })
+    });
 
     console.log(geocoder);
          
@@ -261,6 +275,12 @@ function inicia_mapa() {
     // a cada resultado
 
     geocoder.on('result', function(e) {
+
+        //zera o log
+        $log.selectAll("*").remove();
+        $log.style("opacity", 1);
+
+
         console.log(e.result.center);
         //d3.select("#geocoder").classed("hidden", true);
 
@@ -270,6 +290,8 @@ function inicia_mapa() {
         if (map.getLayer('circulo')) map.removeLayer('circulo');
         if (map.getSource('circulo')) map.removeSource('circulo');
 
+        $log.append("p").classed("first", true).append("span").text("1. Localização definida.")
+
 
 
         map.flyTo({ 
@@ -278,10 +300,14 @@ function inicia_mapa() {
             'zoom': 12
          });
 
+        $log.append("p").append("span").text("2. Voando para o destino.")
+
         let flying = true;
 
         let lat = e.result.center[1];
         let lon = e.result.center[0];
+
+        $log.append("p").classed("fetch", true).append("span").text("3. Solicitando tamanho do raio para o backend...");
 
         //fetch 
         let t_antes = performance.now()
@@ -298,9 +324,13 @@ function inicia_mapa() {
                 let no_raio = turf.point(ponto_raio);
                 let raio = turf.distance(centro, no_raio);
 
+                $log.select("p.fetch>span").text("3. Solicitando tamanho do raio para o backend... OK!");
+
                 // desenha círculo
 
                 let todos_pontos;
+
+                $log.append("p").classed("circulo", true).append("span").text("4. Desenhando círculo...");
 
                 let o_circulo = circulo(coord_centro, raio);
                 bbox_circulo = turf.bbox(o_circulo);
@@ -315,17 +345,24 @@ function inicia_mapa() {
                             padding: {top: 20, bottom:20, left: 10, right: 10},
                             duration: 1000
                         }); 
+                        $log.append("p").append("span").text("5. Ajusta zoom.");
                         let ajustandoBounds = true;
+                        $log.append("p").append("span").text("6. Coleta features que serão removidos do cálculo (água, parques etc.).");
+                        $log.append("p").classed("simulacao", true).append("span").text("7. Iniciando simulação: gerando um ponto para cada habitante de cada um dos setores total ou parcialmente dentro do círculo (vai demorar)...");
                         
                         map.on('moveend', function(e) {
                             if (ajustandoBounds) {
                                 ajustandoBounds = false;
                                 console.log("Coletando features...");
+
                                 features = map.queryRenderedFeatures({layers : ["water", "landuse", "national-park"]});
                                 poligono_features = turf.union(...features);
-    
+
                                 let setores_dentro = lista_setores_dentro(o_circulo)
+                                
                                 povoa(setores_dentro, poligono_features);
+
+                                $log.append("p").classed("limita", true).append("span").text("9. Filtrando pontos que dentro do círculo... ");
                 
                                 limita(o_circulo); 
                                 //destaca_setores(setores_dentro);

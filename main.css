@@ -40,6 +40,34 @@ main {
     border-radius: .5em;
 }
 
+#log {
+    position: absolute;
+    bottom: 30px;
+    width: 300px;
+    left: 10px;
+    font-size: 0.7rem;
+    font-family: "Fira Code", monospace;
+}
+
+#log p {
+    margin-bottom: 1px;
+}
+
+#log p span {
+    background-color: #333;
+    color: ghostwhite;
+}
+
+#log p.oculta {
+    cursor: pointer;
+    border-radius: .5em;
+    margin-bottom: .5em;
+    padding: .5em;
+    background-color: #333;
+    color: ghostwhite;
+    display: inline-block;
+}
+
 @media (max-width: 480px) {
     #geocoder {
         left: .5em;
