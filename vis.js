@@ -61,45 +61,62 @@ function povoa(setores_dentro, poligono_features) {
     let pop_total = 0;
     let setores_undefined = []
 
+    console.log("qde de setores", setores_dentro.length);
+    console.log("qde de setores unicos", d3.map(setores_dentro, d=>d.properties.code_tract).keys().length)
+    let tn = performance.now();
+    
+    let tn1 = performance.now();
+    let setores_computados = [];
 
     for (setor of setores_dentro) {
         try {
-            let pop = setor.properties.populacao_residente;
             let cod_setor = setor.properties.code_tract;
 
-            let bbox_setor = turf.bbox(setor);
-            let bboxPoly = turf.bboxPolygon(bbox_setor);
+            // esse if para evitar duplicidade
+            if (!setores_computados.includes(cod_setor)) {
+                
+                setores_computados.push(cod_setor);
 
-            let area_bbox = turf.area(bboxPoly);
-
-            // melhor fazer um query pra cada setor? ou um query só dos features e os differences. e, nesse último caso, fazer um intersect antes dos features com o bbox do setor?
-
-            let setor_liquido = turf.difference(setor, poligono_features);
-            let area_liquida = turf.area(setor_liquido);
-
-            let razao = area_bbox / area_liquida;
-
-            let pontos = turf.randomPoint(pop * razao, {bbox: bbox_setor});
-
-            let pontos_dentro = turf.pointsWithinPolygon(pontos, setor_liquido);
-
-            if (!pop) setores_undefined.push(cod_setor);
+                let pop = setor.properties.populacao_residente;
             
-            total_pontos += pontos_dentro.features.length;
-            pop_total += pop ? pop : 0;
 
-            lista_pontos.push(pontos_dentro);
+                let bbox_setor = turf.bbox(setor);
+                let bboxPoly = turf.bboxPolygon(bbox_setor);
+    
+                let area_bbox = turf.area(bboxPoly);
+    
+                // melhor fazer um query pra cada setor? ou um query só dos features e os differences. e, nesse último caso, fazer um intersect antes dos features com o bbox do setor?
+    
+                let setor_liquido = turf.difference(setor, poligono_features);
+                let area_liquida = turf.area(setor_liquido);
+    
+                let razao = area_bbox / area_liquida;
+    
+                let pontos = turf.randomPoint(pop * razao, {bbox: bbox_setor});
+    
+                let pontos_dentro = turf.pointsWithinPolygon(pontos, setor_liquido);
+    
+                if (!pop) setores_undefined.push(cod_setor);
+                
+                total_pontos += pontos_dentro.features.length;
+                pop_total += pop ? pop : 0;
+    
+                lista_pontos.push(...pontos_dentro.features);
 
-            console.log("Setor", cod_setor, "\n Pop: ", pop, "\n pontos_dentro: ", pontos_dentro.features.length, "\n taxa de pontos_dentro/necessarios: ", 100*pontos_dentro.features.length/pop, '\n Pop total até agora ', pop_total);                        
+                console.log("Setor", cod_setor, "\n Pop: ", pop, "\n pontos_dentro: ", pontos_dentro.features.length, "\n taxa de pontos_dentro/necessarios: ", 100*pontos_dentro.features.length/pop, '\n Pop total até agora ', pop_total);
+            }
+                        
         } catch (error) {
             console.log("Erro: " + error);
         }
     }
 
     let todos_features = [];
-    lista_pontos.forEach(d => todos_features = todos_features.concat(d.features));
+    //lista_pontos.forEach(d => todos_features = todos_features.concat(d.features));
     //console.log({lista_pontos});
     //console.log({todos_features})
+
+    console.log("Dos ", setores_dentro.length, " setores, apenas ", setores_computados.length, " foram computados (o resto era duplicado).");
 
     console.log("A população total nos setores é: ", pop_total, '\n A quantidade de pontos gerados dentro dos polígonos foi ', total_pontos);
 
@@ -108,7 +125,7 @@ function povoa(setores_dentro, poligono_features) {
 
     todos_pontos = {
         "type": "FeatureCollection",
-        "features": todos_features
+        "features": lista_pontos
     }
 
     $log.append("p").append("span").text("8. Simulação Ok!");   
