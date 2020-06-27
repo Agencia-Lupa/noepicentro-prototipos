@@ -45,7 +45,7 @@ function popula_mapa() {
 function estiliza(o_circulo, estado_estilo) {
 
     map.setPaintProperty(
-        'popdentro', 
+        'concatenated-tract-points', 
         'circle-color', 
         [
             "case",
@@ -55,7 +55,7 @@ function estiliza(o_circulo, estado_estilo) {
         ]);
 
     map.setPaintProperty(
-        'popdentro', 
+        'concatenated-tract-points', 
         'circle-opacity', 
         [
             "case",

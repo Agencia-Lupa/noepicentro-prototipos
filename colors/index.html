@@ -107,7 +107,7 @@
 
                 </div>
             </div>
-            <button id="toggle-labels" type="button" class="selected">Mostra texto</button>            
+            <button id="toggle-labels" type="button" class="selected">Mostra texto</button>
             <button id="toggle-circle" type="button" class="selected">Mostra círculo</button>
         </div>
     </div>
@@ -170,7 +170,8 @@
 
                 let circle = circulo(center, 1.54);
 
-                popula_mapa();
+                //popula_mapa();
+                map.moveLayer('concatenated-tract-points', 'landuse')
 
                 function monitora(event) {
 
@@ -214,9 +215,9 @@
             });
         
         </script>
-    <script src='../external_scripts/turf.min.js'></script>
-    <script src='../external_scripts/d3.v5.min.js'></script>
-    <script src='map_actions.js'></script>
+    <script src='../web/external_scripts/turf.min.js'></script>
+    <script src='../web/external_scripts/d3.v5.min.js'></script>
+    <script src='../web/map_actions.js'></script>
 
 </body>
 </html>
