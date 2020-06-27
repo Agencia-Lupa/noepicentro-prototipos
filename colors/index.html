@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" />
+    <title>Protótipo Projeto</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.11.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Lora&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        input, label {
+            margin: 0.4rem;
+        }
+
+        input {
+            display: block;
+        }
+
+        h2 {
+            font-size: inherit;
+        }
+
+        .controls {
+            position: absolute;
+            top: 10px;
+            width: 200px;
+            left: 10px;
+            font-size: 0.7rem;
+            font-family: "Fira Code", monospace;
+}
+
+        div.wrap-controle {
+            padding: 0.5rem;
+            border-radius: .5rem;
+            background-color: ghostwhite;
+            margin: 0.5rem;
+        }
+
+        button {
+            font-family: "Fira Code", monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            border-radius: .5em;
+            margin-bottom: .5em;
+            padding: .5em;
+            color: grey;
+            margin-right: .5em;
+            display: inline-block;
+            border: 2px solid grey;
+            margin: 0.5rem;
+            background-color: transparent;
+
+        }
+
+        button.selected {
+            background-color: grey;
+            color: ghostwhite;
+        }
+
+        .map-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    </head>
+
+<body>  
+    <div class="map-container">
+        <div id="map"></div>
+
+        <div class="controls">
+
+            <div id="set-style">
+                <div class="wrap-controle">
+                    <h2>Pontos dentro</h2>
+                    <div>
+                        <label for="cor-dentro">Cor: <span id="valor-cor-dentro"></span></label>
+                        <input type="color" id="cor-dentro" name="cor-dentro"
+                    value="#FFFFFF">
+                    </div>
+                    <div>
+                        <label for="opacity-dentro">Opacidade: <span id="valor-opacity-dentro"></span></label>
+                        <input type="range" id="opacity-dentro" name="opacity-dentro"
+                        min="0" max="1" value = "1" step="0.1">
+                    </div>
+                </div>            
+                <div class="wrap-controle">
+                    <h2>Pontos fora</h2>
+                    <div>
+                        <label for="cor-fora">Cor: <span id="valor-cor-fora"></span></label>
+                        <input type="color" id="cor-fora" name="cor-fora"
+                            value="#313131">
+                    </div>
+                    <div>
+                        <label for="opacity-fora">Opacidade: <span id="valor-opacity-fora"></span></label>
+                        <input type="range" id="opacity-fora" name="opacity-fora"
+                                min="0" max="1" value="0.5" step="0.1">
+                    </div>
+
+                </div>
+            </div>
+            <button id="toggle-labels" type="button" class="selected">Mostra texto</button>            
+            <button id="toggle-circle" type="button" class="selected">Mostra círculo</button>
+        </div>
+    </div>
+
+        <script>
+
+            let inputs = document.getElementById("set-style");
+
+            let estado_estilo = {};
+
+            // inicializa
+            for (onde of ["dentro", "fora"]) {
+                estado_estilo[onde] = {};
+                for (tipo of ["cor", "opacity"]) {
+                    atualiza(tipo, onde);
+                }
+            }
+
+            function atualiza(tipo, onde) {
+                let input = document.querySelector("#" + tipo + "-" + onde);
+                let valor = input.value;
+
+                let label_valor = document.querySelector("#valor" + "-" + tipo + "-" + onde);
+                label_valor.textContent = valor;
+
+                estado_estilo[onde][tipo] = valor;
+
+                return(valor)
+            }
+
+            // function monitora(event) {
+
+            //     let id_input = event.target.id.split("-");
+            //     let tipo = id_input[0];
+            //     let onde = id_input[1];
+            //     let valor = atualiza(tipo, onde);
+
+            //     estiliza(circle)
+
+            //     console.log(estado_estilo);
+
+            //     //console.log(tipo, onde, valor, event);
+            // }
+
+            // inputs.addEventListener("input", monitora);
+            //inputs.addEventListener("change", atualiza);
+
+            mapboxgl.accessToken = 'pk.eyJ1IjoidGlhZ29tYnAiLCJhIjoiY2thdjJmajYzMHR1YzJ5b2huM2pscjdreCJ9.oT7nAiasQnIMjhUB-VFvmw';
+
+            var map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/tiagombp/ckbvijq0806kg1ko9tgeqszfy',
+                center: [-46.474023, -23.5455605],
+                zoom: 14
+            });
+
+            map.on('load', function() {
+
+                let center = [map.getCenter().lng, map.getCenter().lat];
+
+                let circle = circulo(center, 1.54);
+
+                popula_mapa();
+
+                function monitora(event) {
+
+                    let id_input = event.target.id.split("-");
+                    let tipo = id_input[0];
+                    let onde = id_input[1];
+                    let valor = atualiza(tipo, onde);
+
+                    estiliza(circle, estado_estilo)
+
+                    console.log(estado_estilo);
+
+                    //console.log(tipo, onde, valor, event);
+                }
+
+                inputs.addEventListener("input", monitora);
+
+                // botão dos labels
+
+                let button_label = document.querySelector("button#toggle-labels");
+                let button_label_selecionado = true;
+
+                button_label.addEventListener("click", function(event) {
+                    toggle_labels(!button_label_selecionado);
+                    button_label_selecionado = !button_label_selecionado;
+                    button_label.classList.toggle("selected");
+                })
+
+                // botão do circulo
+
+                let button_circle = document.querySelector("button#toggle-circle");
+                let button_circle_selecionado = true;
+
+                button_circle.addEventListener("click", function(event) {
+                    toggle_circle(!button_circle_selecionado);
+                    button_circle_selecionado = !button_circle_selecionado;
+                    button_circle.classList.toggle("selected");
+                })
+
+
+            });
+        
+        </script>
+    <script src='../external_scripts/turf.min.js'></script>
+    <script src='../external_scripts/d3.v5.min.js'></script>
+    <script src='map_actions.js'></script>
+
+</body>
+</html>
