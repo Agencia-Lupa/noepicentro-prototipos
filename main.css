@@ -66,6 +66,8 @@ main {
     color: ghostwhite;
     margin-right: .5em;
     display: inline-block;
+    background-color: #313131;
+    border: 1px solid #313131;
 }
 
 #log p.oculta {
@@ -73,33 +75,14 @@ main {
     border: 1px solid #333;
 }
 
-#log p.mostra {
+#log p.botoes.selecionado {
     background-color: ghostwhite;
-    color: #B3B134;
-    border: 1px solid #B3B134;
-}
-
-#log p.mostra.selecionado {
-    background-color: #B3B134;
-    color: ghostwhite;
-}
-
-#log p.mostra-circulo {
-    background-color: ghostwhite;
-    color: tomato;
-    border: 1px solid tomato;
-}
-
-#log p.mostra-circulo.selecionado {
-    background-color: tomato;
-    color: ghostwhite;
-
+    color: #313131;
 }
 
 #log p.erro span {
-    color: firebrick;
+    color: lightcoral;
 }
-
 
 
 @media (max-width: 480px) {
