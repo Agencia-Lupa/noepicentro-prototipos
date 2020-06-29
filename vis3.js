@@ -68,7 +68,7 @@ function estiliza(o_circulo) {
             "case",
             ['within', o_circulo], 
             "white",
-            "grey"
+            ""
         ]);
 
     map.setPaintProperty(
@@ -78,7 +78,7 @@ function estiliza(o_circulo) {
             "case",
             ['within', o_circulo], 
             0.8,
-            0.5
+            ""
         ]);
 
     map.moveLayer("people", "national-park")
@@ -120,8 +120,8 @@ function destaca_setores(setores_dentro) {
         'source': 'setores',
         'source-layer': 'set-29jjsu',
         'paint': {
-            'fill-outline-color': '#333',
-            'fill-color': '#B3B134',
+            'fill-outline-color': 'goldenrod',
+            'fill-color': 'transparent',
             'fill-opacity': 0
         },
         'filter': ['in', 'code_tract', '']
