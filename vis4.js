@@ -159,12 +159,10 @@ function inicia_mapa() {
         //d3.select("#geocoder").classed("hidden", true);
 
         //remove camadas para novo resultado
-        if (map.getLayer('limita')) map.removeLayer('limita');
-        if (map.getSource('limita')) map.removeSource('limita');
+        if (map.getLayer('people-inside')) map.removeLayer('people-inside');
         if (map.getLayer('circulo')) map.removeLayer('circulo');
         if (map.getSource('circulo')) map.removeSource('circulo');
         if (map.getLayer('setores-destacados')) map.removeLayer('setores-destacados');
-        if (map.getSource('setores')) map.removeSource('setores'); 
 
         $log.append("p").classed("first", true).append("span").text("1. Localização definida.")
 
