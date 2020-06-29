@@ -68,7 +68,7 @@ function estiliza(o_circulo) {
             "case",
             ['within', o_circulo], 
             "white",
-            ""
+            "grey"
         ]);
 
     map.setPaintProperty(
@@ -78,7 +78,7 @@ function estiliza(o_circulo) {
             "case",
             ['within', o_circulo], 
             0.8,
-            ""
+            0.5
         ]);
 
     map.moveLayer("people", "national-park")
