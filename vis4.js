@@ -9,7 +9,6 @@ var map = new mapboxgl.Map({
 let $log = d3.select("#log");
 
 // funções que vão ser chamadas
-
 function circulo(centro, raio) {
 
     if (map.getLayer('circulo')) map.removeLayer('circulo');
@@ -54,7 +53,7 @@ function popula_mapa() {
     map.setPaintProperty(
         'people', 
         'circle-opacity',
-        0.25
+        0.5
     );
     map.moveLayer("people", "national-park")
 }
@@ -87,8 +86,18 @@ function popula_mapa() {
 function toggle_labels(show) {
     //console.log(labels_layers, !labels_layers);
     //if (!labels_layers) 
-    labels_layers = ["settlement-subdivision-label", "poi-label", "water-point-label", "road-label",
-    "waterway-label", "airport-label", "natural-line-label"];
+    labels_layers = [
+        "settlement-major-label", 
+        "settlement-minor-label", 
+        "settlement-subdivision-label", 
+        "natural-point-label", 
+        "poi-label", 
+        "water-point-label", 
+        "road-label",
+        "waterway-label", 
+        "airport-label", 
+        "natural-line-label"
+    ];
 
     let opacity = show ? 1 : 0;
 
@@ -104,22 +113,39 @@ function toggle_circle(show) {
     map.setPaintProperty("circulo", "fill-opacity", opacity);
 }
 
-function creates_inside_layer(circulo) {
-       
-    map.addLayer(
-        {
-        'id': 'people-inside',
-        'type': 'circle',
-        'source': 'composite',
-        'source-layer': 'people',
-        'paint': {
-            'circle-radius': 2,
-            'circle-color': 'white',
-            'circle-opacity': 0.8
-        },
-        'filter': ['within', circulo]
-    },
-    'people'); 
+function creates_inside_layer(centro, raio) {
+
+    let bbox_br = turf.bboxPolygon([-73.9872354804, -33.7683777809, -34.7299934555, 5.24448639569])
+
+    let circles = [];
+    let steps = 4;
+    for (let i = 1; i<=steps; i++) {
+        circles.push(turf.circle(centro, raio * i / steps));
+        console.log(raio * i/steps)
+    }
+
+    let masks = circles.map(d => turf.mask(d, bbox_br));
+
+    map.addSource('mask', {
+                    'type': 'geojson',
+                    'data': masks[0]});
+
+    map.addLayer({'id': 'mask',
+    'type': 'fill',
+    'source': 'mask',
+    'paint': {
+        'fill-color': 'black',
+        'fill-opacity': 0.55}});
+    
+    //for (mask of masks.slice(1)) {
+    for (let i = 0; i<steps; i++) {
+         
+            window.setTimeout(function() {
+                console.log("Raio ", i);
+                map.getSource('mask').setData(masks[i])
+            }, i * 1500);
+
+    }
 }
 
 
@@ -159,10 +185,12 @@ function inicia_mapa() {
         //d3.select("#geocoder").classed("hidden", true);
 
         //remove camadas para novo resultado
-        if (map.getLayer('people-inside')) map.removeLayer('people-inside');
+        if (map.getLayer('limita')) map.removeLayer('limita');
+        if (map.getSource('limita')) map.removeSource('limita');
         if (map.getLayer('circulo')) map.removeLayer('circulo');
         if (map.getSource('circulo')) map.removeSource('circulo');
         if (map.getLayer('setores-destacados')) map.removeLayer('setores-destacados');
+        if (map.getSource('setores')) map.removeSource('setores'); 
 
         $log.append("p").classed("first", true).append("span").text("1. Localização definida.")
 
@@ -264,7 +292,7 @@ function inicia_mapa() {
                                 $log.insert("p", "p.mostra").classed("pop-circulo", true).classed("botoes", true).text("População Círculo").on("click", function() { 
                                     botao_pop_circulo = !botao_pop_circulo
                                     //$log.select("p.pop-circulo").classed("selecionado", botao_pop_circulo);
-                                    creates_inside_layer(o_circulo);
+                                    creates_inside_layer(coord_centro, raio);
                                 });
                      
                             }                            
